@@ -57,7 +57,7 @@ body {
 
 #gameScreen {
 	border: 1px solid white;
-	background-color: skyblue;
+	background-color: black;
 	/* background-image: url("./assets/dungeon.png"); */
 	width: 650px;
 	height: 650px;

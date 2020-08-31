@@ -119,10 +119,26 @@ var Enemy = /*#__PURE__*/function () {
     this.enemy = {
       sprite: skeletonEnemy,
       position: {
-        x: 200,
-        y: 200
+        x: 0,
+        y: 0
       }
     };
+    this.hitbox = {
+      topLeft: this.enemy.position,
+      topRight: {
+        x: this.enemy.position.x + 16,
+        y: this.enemy.position.y
+      },
+      bottomLeft: {
+        x: this.enemy.position.x,
+        y: this.enemy.position.y + 16
+      },
+      bottomRight: {
+        x: this.enemy.position.x + 16,
+        y: this.enemy.position.y + 16
+      }
+    };
+    this.enemy.hitbox = this.hitbox;
   }
 
   _createClass(Enemy, [{
@@ -134,7 +150,7 @@ var Enemy = /*#__PURE__*/function () {
       if (this.characterFrameIndex === 3) {
         this.characterFrameIndex = 0;
       } else {
-        this.characterFrameIndex += 1;
+        this.characterFrameIndex++;
       }
     }
   }, {
@@ -197,6 +213,7 @@ var Game = /*#__PURE__*/function () {
     key: "update",
     value: function update() {
       this.player.update();
+      this.enemy.update();
       this.gameOver();
     }
   }, {
@@ -215,18 +232,16 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "outsideMap",
     value: function outsideMap() {
-      console.log("outside");
-
       if (this.player.conga[0].position.x < 0) {
         // When dying off the left
         return true;
-      } else if (this.player.conga[0].position.x > 650) {
+      } else if (this.player.conga[0].position.x > 613) {
         // When dying off the right
         return true;
       } else if (this.player.conga[0].position.y < 0) {
         // When dying off the top
         return true;
-      } else if (this.player.conga[0].position.y > 610) {
+      } else if (this.player.conga[0].position.y > 549) {
         // When dying off the bottom
         return true;
       } else {
@@ -517,7 +532,8 @@ var Player = /*#__PURE__*/function () {
 
 
         this.conga[0].position.x += this.direction.x * 32;
-        this.conga[0].position.y += this.direction.y * 32; // changes the character sprite frame
+        this.conga[0].position.y += this.direction.y * 32;
+        this.updateHurtBox(); // changes the character sprite frame
 
         if (this.characterFrameIndex === 3) {
           this.characterFrameIndex = 0;
@@ -534,15 +550,37 @@ var Player = /*#__PURE__*/function () {
       this.conga.forEach(function (character) {
         ctx.drawImage(character.sprite.image[_this.characterFrameIndex], 0, 0, character.sprite.width, character.sprite.height, character.position.x, character.position.y, character.sprite.width, character.sprite.height);
       });
-    }
+    } // used for death so graves appear at correct spot 
+
   }, {
     key: "revertMove",
     value: function revertMove() {
       this.conga[0].position = this.conga[1].position;
       this.conga[1].position = this.conga[2].position;
       this.conga[2].position = this.previousPosition;
+    }
+  }, {
+    key: "updateHurtBox",
+    value: function updateHurtBox() {
       this.conga.forEach(function (character) {
-        console.log(character.position);
+        character.hurtbox = {
+          topLeft: {
+            x: character.position.x,
+            y: character.position.y
+          },
+          topRight: {
+            x: character.position.x + 32,
+            y: character.position.y
+          },
+          bottomLeft: {
+            x: character.position.x,
+            y: character.position.y + 48
+          },
+          bottomRight: {
+            x: character.position.x + 32,
+            y: character.position.y + 48
+          }
+        };
       });
     }
   }]);

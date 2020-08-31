@@ -30,6 +30,7 @@ export default class Game {
 
     update() {
         this.player.update();
+        this.enemy.update();
         this.gameOver();
     }
 
@@ -44,14 +45,13 @@ export default class Game {
     }
     
     outsideMap() {
-        console.log("outside")
         if (this.player.conga[0].position.x < 0) { // When dying off the left
             return true;
-        } else if (this.player.conga[0].position.x > 650) { // When dying off the right
+        } else if (this.player.conga[0].position.x > 613) { // When dying off the right
             return true;
         } else if (this.player.conga[0].position.y < 0) { // When dying off the top
             return true;
-        } else if (this.player.conga[0].position.y > 610) { // When dying off the bottom
+        } else if (this.player.conga[0].position.y > 549) { // When dying off the bottom
             return true;
         } else {
             return false;

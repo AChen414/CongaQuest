@@ -52,7 +52,7 @@ export default class Player {
 
             // previous position of last character in line
             this.previousPosition = { x: this.conga[2].position.x, y: this.conga[2].position.y };
-            
+
             // gets input and updates direction
             this.direction = this.input.getInputDirection();
 
@@ -65,6 +65,8 @@ export default class Player {
             this.conga[0].position.x += (this.direction.x * 32);
             this.conga[0].position.y += (this.direction.y * 32);
             
+            this.updateHurtBox();
+
             // changes the character sprite frame
             if (this.characterFrameIndex === 3) {
                 this.characterFrameIndex = 0;
@@ -91,12 +93,21 @@ export default class Player {
         })
     }
 
+    // used for death so graves appear at correct spot 
     revertMove() {
         this.conga[0].position = this.conga[1].position;
         this.conga[1].position = this.conga[2].position;
         this.conga[2].position = this.previousPosition;
+    }
+
+    updateHurtBox() {
         this.conga.forEach((character) => {
-            console.log(character.position);
+            character.hurtbox = { 
+                topLeft: { x: character.position.x, y: character.position.y },
+                topRight: { x: character.position.x + 32, y: character.position.y },
+                bottomLeft: { x: character.position.x, y: character.position.y + 48 },
+                bottomRight: { x: character.position.x + 32, y: character.position.y + 48 }
+            } 
         })
     }
 }

@@ -12,8 +12,15 @@ export default class Enemy {
         skeletonEnemy.image[2].src = './assets/dungeon_tileset/frames/skelet_idle_anim_f2.png';
         skeletonEnemy.image[3].src = './assets/dungeon_tileset/frames/skelet_idle_anim_f3.png';
 
-        this.enemy = { sprite: skeletonEnemy, position: { x: 200, y: 200 } };
-    };
+        this.enemy = { sprite: skeletonEnemy, position: { x: 0, y: 0 } };
+        this.hitbox = {
+            topLeft: this.enemy.position,
+            topRight: { x: this.enemy.position.x + 16, y: this.enemy.position.y },
+            bottomLeft: { x: this.enemy.position.x, y: this.enemy.position.y + 16},
+            bottomRight: { x: this.enemy.position.x + 16, y: this.enemy.position.y + 16}
+        }
+        this.enemy.hitbox = this.hitbox;
+    }
 
     enemySpawnPoint() {
 
@@ -23,7 +30,7 @@ export default class Enemy {
         if (this.characterFrameIndex === 3) {
             this.characterFrameIndex = 0;
         } else {
-            this.characterFrameIndex += 1;
+            this.characterFrameIndex++;
         }
     }
 
