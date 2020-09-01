@@ -7,6 +7,7 @@ export default class Game {
         this.player = new Player();
         this.dungeon = new Image();
         this.enemies = [];
+        this.attacks = [];
 
         this.dungeon.src = "./assets/dungeon.png";
     }
@@ -25,12 +26,17 @@ export default class Game {
         )
 
         this.player.draw(this.ctx);
+        this.drawAttacks();
         this.drawEnemies();
     }
 
     update() {
         this.player.update();
         this.updateEnemies(2);
+        if (this.attacks.length === 0) {
+            this.attackNearestEnemy(this.player.conga[0].position.x, this.player.conga[0].position.y);
+        }
+        this.updateAttacks();
         this.gameOver();
     }
 
@@ -94,6 +100,46 @@ export default class Game {
     drawEnemies() {
         this.enemies.forEach((enemy) => {
             enemy.draw(this.ctx);
+        })
+    }
+
+    attackNearestEnemy(playerX, playerY) {
+        this.enemies.forEach((enemy) => {
+            if (Math.abs(enemy.enemy.position.x - playerX) < 100 && Math.abs(enemy.enemy.position.y - playerY) < 100) {
+                let attack = this.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
+                this.attacks.push(attack);
+                return;
+            }
+        })
+    }
+
+    drawAttacks() {
+        this.attacks.forEach((attack) => {
+            attack.draw(this.ctx);
+        })
+    }
+
+    updateAttacks() {
+        this.attacks.forEach((attack) => {
+            attack.update();
+
+            // if projectile goes off screen, remove it
+            if (attack.projectile.position.x > 650 || attack.projectile.position.x < 0 || attack.projectile.position.y > 610 || attack.projectile.position.y < 0) {
+                this.attacks.pop();     // change this once more than one person attacks
+                return;
+            }
+
+            // checks if attack collides with enemy and removes if it does
+            let idxToRemove = null;
+            this.enemies.forEach((enemy) => {
+                if (this.collision(enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight, attack.projectile.hitbox.topLeft, attack.projectile.hitbox.bottomRight)) {
+                    this.attacks.pop(); // change this once more than one person attacks
+                    idxToRemove = this.enemies.indexOf(enemy);
+                }
+            })
+            if (idxToRemove) {
+                this.enemies.splice(idxToRemove, 1);
+            }
         })
     }
 }

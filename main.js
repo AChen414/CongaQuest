@@ -86,6 +86,84 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/attack.js":
+/*!***********************!*\
+  !*** ./src/attack.js ***!
+  \***********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Attack; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Attack = /*#__PURE__*/function () {
+  function Attack(playerX, playerY, vector) {
+    _classCallCheck(this, Attack);
+
+    this.frameIndex = 0;
+    var fireball = {
+      image: [new Image(), new Image()],
+      width: 11,
+      height: 11
+    };
+    fireball.image[0].src = './assets/fireball_0.png';
+    fireball.image[1].src = './assets/fireball_0.png';
+    this.projectile = {
+      sprite: fireball
+    };
+    this.projectile.position = {
+      x: playerX,
+      y: playerY
+    };
+    this.projectile.hitbox = {
+      topLeft: this.projectile.position,
+      bottomRight: {
+        x: this.projectile.position.x + 11,
+        y: this.projectile.position.y + 11
+      }
+    };
+    this.projectile.vector = vector;
+  }
+
+  _createClass(Attack, [{
+    key: "update",
+    value: function update() {
+      this.projectile.position.x += this.projectile.vector.x * 11;
+      this.projectile.position.y += this.projectile.vector.y * 11;
+      this.projectile.hitbox = {
+        topLeft: this.projectile.position,
+        bottomRight: {
+          x: this.projectile.position.x + 11,
+          y: this.projectile.position.y + 11
+        }
+      };
+
+      if (this.frameIndex = 0) {
+        this.frameIndex = 1;
+      } else {
+        this.frameIndex = 0;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      ctx.drawImage(this.projectile.sprite.image[this.frameIndex], 0, 0, this.projectile.sprite.width, this.projectile.sprite.height, this.projectile.position.x, this.projectile.position.y, this.projectile.sprite.width, this.projectile.sprite.height);
+    }
+  }]);
+
+  return Attack;
+}();
+
+
+
+/***/ }),
+
 /***/ "./src/enemy.js":
 /*!**********************!*\
   !*** ./src/enemy.js ***!
@@ -120,14 +198,13 @@ var Enemy = /*#__PURE__*/function () {
       sprite: skeletonEnemy
     };
     this.enemy.position = this.enemySpawnPoint(playerX, playerY);
-    this.hitbox = {
+    this.enemy.hitbox = {
       topLeft: this.enemy.position,
       bottomRight: {
         x: this.enemy.position.x + 16,
         y: this.enemy.position.y + 16
       }
     };
-    this.enemy.hitbox = this.hitbox;
   }
 
   _createClass(Enemy, [{
@@ -198,6 +275,7 @@ var Game = /*#__PURE__*/function () {
     this.player = new _player__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this.dungeon = new Image();
     this.enemies = [];
+    this.attacks = [];
     this.dungeon.src = "./assets/dungeon.png";
   }
 
@@ -209,6 +287,7 @@ var Game = /*#__PURE__*/function () {
 
       this.ctx.drawImage(this.dungeon, 0, 0, 650, 650);
       this.player.draw(this.ctx);
+      this.drawAttacks();
       this.drawEnemies();
     }
   }, {
@@ -216,6 +295,12 @@ var Game = /*#__PURE__*/function () {
     value: function update() {
       this.player.update();
       this.updateEnemies(2);
+
+      if (this.attacks.length === 0) {
+        this.attackNearestEnemy(this.player.conga[0].position.x, this.player.conga[0].position.y);
+      }
+
+      this.updateAttacks();
       this.gameOver();
     }
   }, {
@@ -299,6 +384,62 @@ var Game = /*#__PURE__*/function () {
 
       this.enemies.forEach(function (enemy) {
         enemy.draw(_this4.ctx);
+      });
+    }
+  }, {
+    key: "attackNearestEnemy",
+    value: function attackNearestEnemy(playerX, playerY) {
+      var _this5 = this;
+
+      this.enemies.forEach(function (enemy) {
+        if (Math.abs(enemy.enemy.position.x - playerX) < 100 && Math.abs(enemy.enemy.position.y - playerY) < 100) {
+          var attack = _this5.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
+
+          _this5.attacks.push(attack);
+
+          return;
+        }
+      });
+    }
+  }, {
+    key: "drawAttacks",
+    value: function drawAttacks() {
+      var _this6 = this;
+
+      this.attacks.forEach(function (attack) {
+        attack.draw(_this6.ctx);
+      });
+    }
+  }, {
+    key: "updateAttacks",
+    value: function updateAttacks() {
+      var _this7 = this;
+
+      this.attacks.forEach(function (attack) {
+        attack.update(); // if projectile goes off screen, remove it
+
+        if (attack.projectile.position.x > 650 || attack.projectile.position.x < 0 || attack.projectile.position.y > 610 || attack.projectile.position.y < 0) {
+          _this7.attacks.pop(); // change this once more than one person attacks
+
+
+          return;
+        } // checks if attack collides with enemy and removes if it does
+
+
+        var idxToRemove = null;
+
+        _this7.enemies.forEach(function (enemy) {
+          if (_this7.collision(enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight, attack.projectile.hitbox.topLeft, attack.projectile.hitbox.bottomRight)) {
+            _this7.attacks.pop(); // change this once more than one person attacks
+
+
+            idxToRemove = _this7.enemies.indexOf(enemy);
+          }
+        });
+
+        if (idxToRemove) {
+          _this7.enemies.splice(idxToRemove, 1);
+        }
       });
     }
   }]);
@@ -491,6 +632,7 @@ var Input = /*#__PURE__*/function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Player; });
 /* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input */ "./src/input.js");
+/* harmony import */ var _attack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./attack */ "./src/attack.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -502,6 +644,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -624,6 +767,25 @@ var Player = /*#__PURE__*/function () {
             y: character.position.y + 48
           }
         };
+      });
+    }
+  }, {
+    key: "attack",
+    value: function attack(enemyX, enemyY, playerX, playerY) {
+      var attackX = enemyX - playerX;
+      var attackY = enemyY - playerY; // gets the vector direction the attack should travel
+
+      if (attackX > attackY) {
+        attackY = attackY / attackX;
+        attackX = attackX / attackX;
+      } else {
+        attackX = attackX / attackY;
+        attackY = attackY / attackY;
+      }
+
+      return new _attack__WEBPACK_IMPORTED_MODULE_1__["default"](playerX, playerY, {
+        x: attackX,
+        y: attackY
       });
     }
   }]);

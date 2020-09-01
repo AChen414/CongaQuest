@@ -14,12 +14,10 @@ export default class Enemy {
 
         this.enemy = { sprite: skeletonEnemy };
         this.enemy.position = this.enemySpawnPoint(playerX, playerY);
-
-        this.hitbox = {
+        this.enemy.hitbox = {
             topLeft: this.enemy.position,
             bottomRight: { x: this.enemy.position.x + 16, y: this.enemy.position.y + 16}
         }
-        this.enemy.hitbox = this.hitbox;
     }
 
     enemySpawnPoint(playerX, playerY) {

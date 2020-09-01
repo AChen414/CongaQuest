@@ -1,4 +1,5 @@
 import Input from './input';
+import Attack from './attack';
 
 export default class Player {
     constructor() {
@@ -109,5 +110,20 @@ export default class Player {
                 bottomRight: { x: character.position.x + 32, y: character.position.y + 48 }
             } 
         })
+    }
+
+    attack(enemyX, enemyY, playerX, playerY) {
+        let attackX = enemyX - playerX;
+        let attackY = enemyY - playerY;
+
+        // gets the vector direction the attack should travel
+        if (attackX > attackY) {
+            attackY = attackY / attackX;
+            attackX = attackX / attackX;
+        } else {
+            attackX = attackX / attackY;
+            attackY = attackY / attackY;
+        }
+        return new Attack (playerX, playerY, { x: attackX, y: attackY });
     }
 }
