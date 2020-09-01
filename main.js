@@ -103,7 +103,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var Enemy = /*#__PURE__*/function () {
-  function Enemy() {
+  function Enemy(playerX, playerY) {
     _classCallCheck(this, Enemy);
 
     this.characterFrameIndex = 0;
@@ -117,22 +117,11 @@ var Enemy = /*#__PURE__*/function () {
     skeletonEnemy.image[2].src = './assets/dungeon_tileset/frames/skelet_idle_anim_f2.png';
     skeletonEnemy.image[3].src = './assets/dungeon_tileset/frames/skelet_idle_anim_f3.png';
     this.enemy = {
-      sprite: skeletonEnemy,
-      position: {
-        x: 0,
-        y: 0
-      }
+      sprite: skeletonEnemy
     };
+    this.enemy.position = this.enemySpawnPoint(playerX, playerY);
     this.hitbox = {
       topLeft: this.enemy.position,
-      topRight: {
-        x: this.enemy.position.x + 16,
-        y: this.enemy.position.y
-      },
-      bottomLeft: {
-        x: this.enemy.position.x,
-        y: this.enemy.position.y + 16
-      },
       bottomRight: {
         x: this.enemy.position.x + 16,
         y: this.enemy.position.y + 16
@@ -143,7 +132,20 @@ var Enemy = /*#__PURE__*/function () {
 
   _createClass(Enemy, [{
     key: "enemySpawnPoint",
-    value: function enemySpawnPoint() {}
+    value: function enemySpawnPoint(playerX, playerY) {
+      var randomX = Math.floor(Math.random() * 634);
+      var randomY = Math.floor(Math.random() * 594);
+
+      while (Math.abs(playerX - randomX) < 64 && Math.abs(playerY - randomY)) {
+        randomX = Math.floor(Math.random() * 634);
+        randomY = Math.floor(Math.random() * 594);
+      }
+
+      return {
+        x: randomX,
+        y: randomY
+      };
+    }
   }, {
     key: "update",
     value: function update() {
@@ -195,7 +197,7 @@ var Game = /*#__PURE__*/function () {
     this.ctx = ctx;
     this.player = new _player__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this.dungeon = new Image();
-    this.enemy = new _enemy__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    this.enemies = [];
     this.dungeon.src = "./assets/dungeon.png";
   }
 
@@ -207,13 +209,13 @@ var Game = /*#__PURE__*/function () {
 
       this.ctx.drawImage(this.dungeon, 0, 0, 650, 650);
       this.player.draw(this.ctx);
-      this.enemy.draw(this.ctx);
+      this.drawEnemies();
     }
   }, {
     key: "update",
     value: function update() {
       this.player.update();
-      this.enemy.update();
+      this.updateEnemies(2);
       this.gameOver();
     }
   }, {
@@ -221,7 +223,7 @@ var Game = /*#__PURE__*/function () {
     value: function gameOver() {
       var _this = this;
 
-      if (this.outsideMap() || this.enemyCollision()) {
+      if (this.playerCollision() || this.outsideMap()) {
         this.player.alive = false;
         this.player.conga.forEach(function (character) {
           character.sprite = _this.player.deathCharacter;
@@ -249,8 +251,56 @@ var Game = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "enemyCollision",
-    value: function enemyCollision() {}
+    key: "playerCollision",
+    value: function playerCollision() {
+      var _this2 = this;
+
+      this.player.conga.forEach(function (character) {
+        _this2.enemies.forEach(function (enemy) {
+          if (_this2.collision(character.hurtbox.topLeft, character.hurtbox.bottomRight, enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight)) {
+            return true;
+          }
+        });
+      });
+      return false;
+    }
+  }, {
+    key: "collision",
+    value: function collision(topLeft1, bottomRight1, topLeft2, bottomRight2) {
+      // checks if object 1 is to the left or right of object 2
+      if (topLeft1.x > bottomRight2.x || bottomRight1.x < topLeft2.x) {
+        return false;
+      } // checks if object 1 is above or below object 2
+
+
+      if (topLeft1.y > bottomRight2.y || bottomRight1.y < topLeft2.y) {
+        return false;
+      }
+
+      return true;
+    }
+  }, {
+    key: "updateEnemies",
+    value: function updateEnemies(difficulty) {
+      var _this3 = this;
+
+      while (this.enemies.length < difficulty) {
+        this.enemies.push(new _enemy__WEBPACK_IMPORTED_MODULE_1__["default"](this.player.conga[0].position.x, this.player.conga[0].position.y));
+      }
+
+      this.enemies.forEach(function (enemy) {
+        enemy.update(_this3.ctx);
+      });
+    }
+  }, {
+    key: "drawEnemies",
+    value: function drawEnemies() {
+      var _this4 = this;
+
+      this.enemies.forEach(function (enemy) {
+        enemy.draw(_this4.ctx);
+      });
+    }
   }]);
 
   return Game;
@@ -512,6 +562,7 @@ var Player = /*#__PURE__*/function () {
         y: 395
       }
     }];
+    this.updateHurtBox();
   }
 
   _createClass(Player, [{
@@ -567,14 +618,6 @@ var Player = /*#__PURE__*/function () {
           topLeft: {
             x: character.position.x,
             y: character.position.y
-          },
-          topRight: {
-            x: character.position.x + 32,
-            y: character.position.y
-          },
-          bottomLeft: {
-            x: character.position.x,
-            y: character.position.y + 48
           },
           bottomRight: {
             x: character.position.x + 32,

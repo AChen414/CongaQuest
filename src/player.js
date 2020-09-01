@@ -45,6 +45,8 @@ export default class Player {
             { sprite: knightCharacter, position: { x: 325, y: 360 } },
             { sprite: wizardCharacter, position: { x: 325, y: 395 } }
         ]
+
+        this.updateHurtBox();
     }
 
     update() {
@@ -104,8 +106,6 @@ export default class Player {
         this.conga.forEach((character) => {
             character.hurtbox = { 
                 topLeft: { x: character.position.x, y: character.position.y },
-                topRight: { x: character.position.x + 32, y: character.position.y },
-                bottomLeft: { x: character.position.x, y: character.position.y + 48 },
                 bottomRight: { x: character.position.x + 32, y: character.position.y + 48 }
             } 
         })

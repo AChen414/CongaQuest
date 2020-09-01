@@ -1,5 +1,5 @@
 export default class Enemy {
-    constructor() {
+    constructor(playerX, playerY) {
         this.characterFrameIndex = 0;
 
         const skeletonEnemy = {
@@ -12,18 +12,26 @@ export default class Enemy {
         skeletonEnemy.image[2].src = './assets/dungeon_tileset/frames/skelet_idle_anim_f2.png';
         skeletonEnemy.image[3].src = './assets/dungeon_tileset/frames/skelet_idle_anim_f3.png';
 
-        this.enemy = { sprite: skeletonEnemy, position: { x: 0, y: 0 } };
+        this.enemy = { sprite: skeletonEnemy };
+        this.enemy.position = this.enemySpawnPoint(playerX, playerY);
+
         this.hitbox = {
             topLeft: this.enemy.position,
-            topRight: { x: this.enemy.position.x + 16, y: this.enemy.position.y },
-            bottomLeft: { x: this.enemy.position.x, y: this.enemy.position.y + 16},
             bottomRight: { x: this.enemy.position.x + 16, y: this.enemy.position.y + 16}
         }
         this.enemy.hitbox = this.hitbox;
     }
 
-    enemySpawnPoint() {
+    enemySpawnPoint(playerX, playerY) {
+        let randomX = Math.floor(Math.random() * 634);
+        let randomY = Math.floor(Math.random() * 594);
 
+        while (Math.abs(playerX - randomX) < 64 && Math.abs(playerY - randomY)) {
+            randomX = Math.floor(Math.random() * 634);
+            randomY = Math.floor(Math.random() * 594);
+        }
+
+        return { x: randomX, y: randomY };
     }
 
     update() {

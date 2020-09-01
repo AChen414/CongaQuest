@@ -6,7 +6,7 @@ export default class Game {
         this.ctx = ctx;
         this.player = new Player();
         this.dungeon = new Image();
-        this.enemy = new Enemy();
+        this.enemies = [];
 
         this.dungeon.src = "./assets/dungeon.png";
     }
@@ -25,17 +25,17 @@ export default class Game {
         )
 
         this.player.draw(this.ctx);
-        this.enemy.draw(this.ctx);
+        this.drawEnemies();
     }
 
     update() {
         this.player.update();
-        this.enemy.update();
+        this.updateEnemies(2);
         this.gameOver();
     }
 
     gameOver() {
-        if (this.outsideMap() || this.enemyCollision()) {
+        if (this.playerCollision() || this.outsideMap()) {
             this.player.alive = false;
             this.player.conga.forEach((character) => {
                 character.sprite = this.player.deathCharacter
@@ -56,9 +56,44 @@ export default class Game {
         } else {
             return false;
         }
-    };
+    }
 
-    enemyCollision() {
+    playerCollision() {
+        this.player.conga.forEach((character) => {
+            this.enemies.forEach((enemy) => {
+                if (this.collision(character.hurtbox.topLeft, character.hurtbox.bottomRight, enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight)) {
+                    return true;   
+                }
+            })
+        })
+        return false;
+    }
 
+    collision(topLeft1, bottomRight1, topLeft2, bottomRight2) {
+        // checks if object 1 is to the left or right of object 2
+        if (topLeft1.x > bottomRight2.x || bottomRight1.x < topLeft2.x) {
+            return false;
+        }
+
+        // checks if object 1 is above or below object 2
+        if (topLeft1.y > bottomRight2.y || bottomRight1.y < topLeft2.y) {
+            return false;
+        }
+        return true;
+    }
+
+    updateEnemies(difficulty) {
+        while (this.enemies.length < difficulty) {
+            this.enemies.push(new Enemy(this.player.conga[0].position.x, this.player.conga[0].position.y));
+        }
+        this.enemies.forEach((enemy) => {
+            enemy.update(this.ctx);
+        })
+    }
+
+    drawEnemies() {
+        this.enemies.forEach((enemy) => {
+            enemy.draw(this.ctx);
+        })
     }
 }
