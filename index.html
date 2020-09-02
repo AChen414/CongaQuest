@@ -4,13 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./stylesheets/main.css" type="text/css">
+    <link rel="icon" href="./assets/favicon.ico">
+
 
     <title>Conga Quest</title>
 </head>
 <body>
     
-    <canvas id="gameScreen" height="610" width="650"></canvas>
+    <div class="directions">
+        <h2 class="score">Score: 0</h2>
+        <h2 class="controls">Controls</h2>
+        <p class="control-title">Movement</p>
+        <img src="./assets/arrow.png" class="arrow-keys">
+        <p class="instructions">
+            Use the arrow keys to move your conga line of adventurers.<br><br>
 
+            You will automatically attack enemies you are near.<br><br>
+
+            Care to avoid the edge of the screen and the enemies. You lose if you walk off the screen or into an enemy.
+        </p>
+    </div>
+    <canvas id="gameScreen" height="610" width="650"></canvas>
+    <aside class="links">
+        <div class="linkedin">
+            <a href="https://linkedin.com/in/andrew-chen-787534171">
+                <img src="./assets/linkedin.png" class="linkedin-img">
+            </a>
+        </div>
+        <div class="github">
+            <a href="https://github.com/AChen414/CongaQuest">
+                <img src="./assets/github.png" class="github-img">
+            </a>
+        </div>
+    </aside>
     <script src="main.js"></script>
 </body>
 </html>

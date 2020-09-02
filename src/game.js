@@ -8,6 +8,7 @@ export default class Game {
         this.dungeon = new Image();
         this.enemies = [];
         this.attacks = [];
+        this.score = 0;
 
         this.dungeon.src = "./assets/dungeon.png";
     }

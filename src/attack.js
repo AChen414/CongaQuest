@@ -8,7 +8,7 @@ export default class Attack {
             height: 11
         };
         fireball.image[0].src = './assets/fireball_0.png';
-        fireball.image[1].src = './assets/fireball_0.png';
+        fireball.image[1].src = './assets/fireball_1.png';
 
         this.projectile = { sprite: fireball };
         this.projectile.position = { x: playerX, y: playerY };
@@ -29,7 +29,7 @@ export default class Attack {
         }
 
         if (this.frameIndex = 0) {
-            this.frameIndex = 1;
+            this.frameIndex++;
         } else {
             this.frameIndex = 0;
         }

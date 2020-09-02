@@ -113,7 +113,7 @@ var Attack = /*#__PURE__*/function () {
       height: 11
     };
     fireball.image[0].src = './assets/fireball_0.png';
-    fireball.image[1].src = './assets/fireball_0.png';
+    fireball.image[1].src = './assets/fireball_1.png';
     this.projectile = {
       sprite: fireball
     };
@@ -145,7 +145,7 @@ var Attack = /*#__PURE__*/function () {
       };
 
       if (this.frameIndex = 0) {
-        this.frameIndex = 1;
+        this.frameIndex++;
       } else {
         this.frameIndex = 0;
       }
@@ -276,6 +276,7 @@ var Game = /*#__PURE__*/function () {
     this.dungeon = new Image();
     this.enemies = [];
     this.attacks = [];
+    this.score = 0;
     this.dungeon.src = "./assets/dungeon.png";
   }
 
@@ -476,6 +477,7 @@ var GameView = /*#__PURE__*/function () {
 
     this.lastRenderTime = 0;
     this.updatesPerSecond = 5;
+    this.score = 0;
     this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](ctx);
   }
 
@@ -498,6 +500,7 @@ var GameView = /*#__PURE__*/function () {
       console.log('Render');
       this.update();
       this.draw();
+      document.getElementsByClassName('score').innerHTML = "Score: ".concat(this.score);
     }
   }, {
     key: "update",

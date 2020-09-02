@@ -4,6 +4,7 @@ export default class GameView {
     constructor(ctx) {
         this.lastRenderTime = 0;
         this.updatesPerSecond = 5;
+        this.score = 0;
         this.game = new Game(ctx);
     }
 
@@ -22,6 +23,7 @@ export default class GameView {
 
         this.update();
         this.draw();
+        document.getElementsByClassName('score').innerHTML = `Score: ${this.score}`;
     }
 
     update() {
