@@ -295,7 +295,7 @@ var Game = /*#__PURE__*/function () {
     key: "update",
     value: function update() {
       this.player.update();
-      this.updateEnemies(2);
+      this.updateEnemies(2); // change this when difficulty is implemented
 
       if (this.attacks.length === 0) {
         this.attackNearestEnemy(this.player.conga[0].position.x, this.player.conga[0].position.y);
@@ -440,6 +440,11 @@ var Game = /*#__PURE__*/function () {
 
         if (idxToRemove) {
           _this7.enemies.splice(idxToRemove, 1);
+
+          _this7.score++;
+          document.getElementById('score').innerHTML = _this7.score; ///////// TEST //////////
+
+          console.log(_this7.score);
         }
       });
     }

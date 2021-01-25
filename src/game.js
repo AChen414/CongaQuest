@@ -9,7 +9,6 @@ export default class Game {
         this.enemies = [];
         this.attacks = [];
         this.score = 0;
-
         this.dungeon.src = "./assets/dungeon.png";
     }
 
@@ -33,7 +32,7 @@ export default class Game {
 
     update() {
         this.player.update();
-        this.updateEnemies(2);
+        this.updateEnemies(2); // change this when difficulty is implemented
         if (this.attacks.length === 0) {
             this.attackNearestEnemy(this.player.conga[0].position.x, this.player.conga[0].position.y);
         }
@@ -140,6 +139,10 @@ export default class Game {
             })
             if (idxToRemove) {
                 this.enemies.splice(idxToRemove, 1);
+                this.score++;
+                document.getElementById('score').innerHTML = this.score;
+                ///////// TEST //////////
+                console.log(this.score);
             }
         })
     }
