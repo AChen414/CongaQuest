@@ -309,12 +309,12 @@ var Game = /*#__PURE__*/function () {
     value: function gameOver() {
       var _this = this;
 
-      if (this.playerCollision() || this.outsideMap()) {
+      if (this.outsideMap() || this.playerCollision()) {
         this.player.alive = false;
         this.player.conga.forEach(function (character) {
           character.sprite = _this.player.deathCharacter;
         });
-        this.player.revertMove();
+        if (!this.playerCollision()) this.player.revertMove();
       }
     }
   }, {
@@ -339,15 +339,16 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "playerCollision",
     value: function playerCollision() {
-      var _this2 = this;
+      var hurtbox = this.player.conga[0].hurtbox;
 
-      this.player.conga.forEach(function (character) {
-        _this2.enemies.forEach(function (enemy) {
-          if (_this2.collision(character.hurtbox.topLeft, character.hurtbox.bottomRight, enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight)) {
-            return true;
-          }
-        });
-      });
+      for (var i = 0; i < this.enemies.length; i++) {
+        var hitbox = this.enemies[i].enemy.hitbox;
+
+        if (this.collision(hurtbox.topLeft, hurtbox.bottomRight, hitbox.topLeft, hitbox.bottomRight)) {
+          return true;
+        }
+      }
+
       return false;
     }
   }, {
@@ -368,85 +369,92 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "updateEnemies",
     value: function updateEnemies(difficulty) {
-      var _this3 = this;
+      var _this2 = this;
 
       while (this.enemies.length < difficulty) {
         this.enemies.push(new _enemy__WEBPACK_IMPORTED_MODULE_1__["default"](this.player.conga[0].position.x, this.player.conga[0].position.y));
       }
 
       this.enemies.forEach(function (enemy) {
-        enemy.update(_this3.ctx);
+        enemy.update(_this2.ctx);
       });
     }
   }, {
     key: "drawEnemies",
     value: function drawEnemies() {
-      var _this4 = this;
+      var _this3 = this;
 
       this.enemies.forEach(function (enemy) {
-        enemy.draw(_this4.ctx);
+        enemy.draw(_this3.ctx);
       });
     }
   }, {
     key: "attackNearestEnemy",
     value: function attackNearestEnemy(playerX, playerY) {
-      var _this5 = this;
+      var _this4 = this;
 
       this.enemies.forEach(function (enemy) {
         if (Math.abs(enemy.enemy.position.x - playerX) < 100 && Math.abs(enemy.enemy.position.y - playerY) < 100) {
-          var attack = _this5.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
+          var attack = _this4.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
 
-          _this5.attacks.push(attack);
-
-          return;
+          _this4.attacks.push(attack);
         }
       });
     }
   }, {
     key: "drawAttacks",
     value: function drawAttacks() {
-      var _this6 = this;
+      var _this5 = this;
 
       this.attacks.forEach(function (attack) {
-        attack.draw(_this6.ctx);
+        attack.draw(_this5.ctx);
       });
     }
   }, {
     key: "updateAttacks",
     value: function updateAttacks() {
-      var _this7 = this;
+      var _this6 = this;
 
       this.attacks.forEach(function (attack) {
         attack.update(); // if projectile goes off screen, remove it
 
         if (attack.projectile.position.x > 650 || attack.projectile.position.x < 0 || attack.projectile.position.y > 610 || attack.projectile.position.y < 0) {
-          _this7.attacks.pop(); // change this once more than one person attacks
+          _this6.attacks.pop(); // change this once more than one person attacks
 
-
-          return;
         } // checks if attack collides with enemy and removes if it does
 
 
         var idxToRemove = null;
 
-        _this7.enemies.forEach(function (enemy) {
-          if (_this7.collision(enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight, attack.projectile.hitbox.topLeft, attack.projectile.hitbox.bottomRight)) {
-            _this7.attacks.pop(); // change this once more than one person attacks
+        _this6.enemies.forEach(function (enemy) {
+          if (_this6.collision(enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight, attack.projectile.hitbox.topLeft, attack.projectile.hitbox.bottomRight)) {
+            _this6.attacks.pop(); // change this once more than one person attacks
 
 
-            idxToRemove = _this7.enemies.indexOf(enemy);
+            idxToRemove = _this6.enemies.indexOf(enemy);
           }
         });
 
         if (idxToRemove) {
-          _this7.enemies.splice(idxToRemove, 1);
+          // This is supposed to remove the enemy that is hit but still doesn't work, I believe the error of the enemy that doesn't die is here
+          _this6.updateScore();
 
-          _this7.score++;
-          document.getElementById('score').innerHTML = _this7.score; ///////// TEST //////////
+          console.log(_this6.enemies, 'index', idxToRemove);
+          var newEnemies = [];
 
-          console.log(_this7.score);
+          for (var i = 0; i < _this6.enemies.length; i++) {
+            if (i !== idxToRemove) newEnemies.push(_this6.enemies[i]);
+          }
+
+          _this6.enemies = newEnemies;
         }
       });
+    }
+  }, {
+    key: "updateScore",
+    value: function updateScore() {
+      this.score++;
+      document.getElementById('score').innerHTML = this.score;
     }
   }]);
 

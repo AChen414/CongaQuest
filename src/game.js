@@ -41,12 +41,12 @@ export default class Game {
     }
 
     gameOver() {
-        if (this.playerCollision() || this.outsideMap()) {
+        if (this.outsideMap() || this.playerCollision()) {
             this.player.alive = false;
             this.player.conga.forEach((character) => {
                 character.sprite = this.player.deathCharacter
             })
-            this.player.revertMove();
+            if (!this.playerCollision()) this.player.revertMove();
         }
     }
     
@@ -65,13 +65,13 @@ export default class Game {
     }
 
     playerCollision() {
-        this.player.conga.forEach((character) => {
-            this.enemies.forEach((enemy) => {
-                if (this.collision(character.hurtbox.topLeft, character.hurtbox.bottomRight, enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight)) {
-                    return true;   
-                }
-            })
-        })
+        let hurtbox = this.player.conga[0].hurtbox;
+        for (let i = 0; i < this.enemies.length; i++) {
+            let hitbox = this.enemies[i].enemy.hitbox
+            if (this.collision(hurtbox.topLeft, hurtbox.bottomRight, hitbox.topLeft, hitbox.bottomRight)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -108,7 +108,6 @@ export default class Game {
             if (Math.abs(enemy.enemy.position.x - playerX) < 100 && Math.abs(enemy.enemy.position.y - playerY) < 100) {
                 let attack = this.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
                 this.attacks.push(attack);
-                return;
             }
         })
     }
@@ -126,7 +125,6 @@ export default class Game {
             // if projectile goes off screen, remove it
             if (attack.projectile.position.x > 650 || attack.projectile.position.x < 0 || attack.projectile.position.y > 610 || attack.projectile.position.y < 0) {
                 this.attacks.pop();     // change this once more than one person attacks
-                return;
             }
 
             // checks if attack collides with enemy and removes if it does
@@ -137,13 +135,21 @@ export default class Game {
                     idxToRemove = this.enemies.indexOf(enemy);
                 }
             })
-            if (idxToRemove) {
-                this.enemies.splice(idxToRemove, 1);
-                this.score++;
-                document.getElementById('score').innerHTML = this.score;
-                ///////// TEST //////////
-                console.log(this.score);
+            if (idxToRemove) { // This is supposed to remove the enemy that is hit but still doesn't work, I believe the error of the enemy that doesn't die is here
+                this.updateScore();
+
+                console.log(this.enemies, 'index', idxToRemove)
+                const newEnemies = [];
+                for (let i = 0; i < this.enemies.length; i++) {
+                    if (i !== idxToRemove) newEnemies.push(this.enemies[i]);
+                }
+                this.enemies = newEnemies;
             }
         })
+    }
+
+    updateScore() {
+        this.score++;
+        document.getElementById('score').innerHTML = this.score;
     }
 }
