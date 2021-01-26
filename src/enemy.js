@@ -1,5 +1,5 @@
 export default class Enemy {
-    constructor(playerX, playerY) {
+    constructor(playerX, playerY, first=null) {
         this.characterFrameIndex = 0;
 
         const skeletonEnemy = {
@@ -18,6 +18,7 @@ export default class Enemy {
             topLeft: this.enemy.position,
             bottomRight: { x: this.enemy.position.x + 16, y: this.enemy.position.y + 16}
         }
+        if (first) this.enemy.position = { x: 10000, y: 10000}
     }
 
     enemySpawnPoint(playerX, playerY) {

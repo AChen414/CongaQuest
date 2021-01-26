@@ -23,7 +23,6 @@ export default class GameView {
 
         this.update();
         this.draw();
-        document.getElementsByClassName('score').innerHTML = `Score: ${this.score}`;
     }
 
     update() {

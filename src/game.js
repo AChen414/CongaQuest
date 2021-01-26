@@ -32,7 +32,7 @@ export default class Game {
 
     update() {
         this.player.update();
-        this.updateEnemies(2); // change this when difficulty is implemented
+        this.updateEnemies(this.determineDifficulty()); // change this when difficulty is implemented
         if (this.attacks.length === 0) {
             this.attackNearestEnemy(this.player.conga[0].position.x, this.player.conga[0].position.y);
         }
@@ -43,6 +43,7 @@ export default class Game {
     gameOver() {
         if (this.outsideMap() || this.playerCollision()) {
             this.player.alive = false;
+            this.attacks = [];
             this.player.conga.forEach((character) => {
                 character.sprite = this.player.deathCharacter
             })
@@ -66,7 +67,7 @@ export default class Game {
 
     playerCollision() {
         let hurtbox = this.player.conga[0].hurtbox;
-        for (let i = 0; i < this.enemies.length; i++) {
+        for (let i = 1; i < this.enemies.length; i++) {
             let hitbox = this.enemies[i].enemy.hitbox
             if (this.collision(hurtbox.topLeft, hurtbox.bottomRight, hitbox.topLeft, hitbox.bottomRight)) {
                 return true;
@@ -89,6 +90,7 @@ export default class Game {
     }
 
     updateEnemies(difficulty) {
+        if (this.enemies.length === 0) this.enemies.push(new Enemy(this.player.conga[0].position.x, this.player.conga[0].position.y, true)) // when game starts add an enemy off screen 
         while (this.enemies.length < difficulty) {
             this.enemies.push(new Enemy(this.player.conga[0].position.x, this.player.conga[0].position.y));
         }
@@ -104,12 +106,14 @@ export default class Game {
     }
 
     attackNearestEnemy(playerX, playerY) {
-        this.enemies.forEach((enemy) => {
-            if (Math.abs(enemy.enemy.position.x - playerX) < 100 && Math.abs(enemy.enemy.position.y - playerY) < 100) {
-                let attack = this.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
+        for (let i = 0; i < this.enemies.length; i++) {
+            if (Math.abs(this.enemies[i].enemy.position.x - playerX) < 100 && Math.abs(this.enemies[i].enemy.position.y - playerY) < 100) {
+                console.log(this.enemies[i], this.player.conga[0].position)
+                let attack = this.player.attack(this.enemies[i].enemy.position.x, this.enemies[i].enemy.position.y, playerX, playerY);
                 this.attacks.push(attack);
+                return;
             }
-        })
+        }
     }
 
     drawAttacks() {
@@ -135,15 +139,9 @@ export default class Game {
                     idxToRemove = this.enemies.indexOf(enemy);
                 }
             })
-            if (idxToRemove) { // This is supposed to remove the enemy that is hit but still doesn't work, I believe the error of the enemy that doesn't die is here
+            if (idxToRemove) { // removes enemy when hit
                 this.updateScore();
-
-                console.log(this.enemies, 'index', idxToRemove)
-                const newEnemies = [];
-                for (let i = 0; i < this.enemies.length; i++) {
-                    if (i !== idxToRemove) newEnemies.push(this.enemies[i]);
-                }
-                this.enemies = newEnemies;
+                this.enemies.splice(idxToRemove, 1);
             }
         })
     }
@@ -151,5 +149,9 @@ export default class Game {
     updateScore() {
         this.score++;
         document.getElementById('score').innerHTML = this.score;
+    }
+
+    determineDifficulty() {
+        return Math.floor((this.score / 2) + 2);
     }
 }

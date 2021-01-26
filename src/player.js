@@ -118,11 +118,11 @@ export default class Player {
 
         // gets the vector direction the attack should travel
         if (attackX > attackY) {
-            attackY = attackY / attackX;
-            attackX = attackX / attackX;
+            attackY = attackY / Math.abs(attackX);
+            attackX = attackX / Math.abs(attackX);
         } else {
-            attackX = attackX / attackY;
-            attackY = attackY / attackY;
+            attackX = attackX / Math.abs(attackY);
+            attackY = attackY / Math.abs(attackY);
         }
         return new Attack (playerX, playerY, { x: attackX, y: attackY });
     }

@@ -182,6 +182,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var Enemy = /*#__PURE__*/function () {
   function Enemy(playerX, playerY) {
+    var first = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
     _classCallCheck(this, Enemy);
 
     this.characterFrameIndex = 0;
@@ -204,6 +206,10 @@ var Enemy = /*#__PURE__*/function () {
         x: this.enemy.position.x + 16,
         y: this.enemy.position.y + 16
       }
+    };
+    if (first) this.enemy.position = {
+      x: 10000,
+      y: 10000
     };
   }
 
@@ -295,7 +301,7 @@ var Game = /*#__PURE__*/function () {
     key: "update",
     value: function update() {
       this.player.update();
-      this.updateEnemies(2); // change this when difficulty is implemented
+      this.updateEnemies(this.determineDifficulty()); // change this when difficulty is implemented
 
       if (this.attacks.length === 0) {
         this.attackNearestEnemy(this.player.conga[0].position.x, this.player.conga[0].position.y);
@@ -311,6 +317,7 @@ var Game = /*#__PURE__*/function () {
 
       if (this.outsideMap() || this.playerCollision()) {
         this.player.alive = false;
+        this.attacks = [];
         this.player.conga.forEach(function (character) {
           character.sprite = _this.player.deathCharacter;
         });
@@ -341,7 +348,7 @@ var Game = /*#__PURE__*/function () {
     value: function playerCollision() {
       var hurtbox = this.player.conga[0].hurtbox;
 
-      for (var i = 0; i < this.enemies.length; i++) {
+      for (var i = 1; i < this.enemies.length; i++) {
         var hitbox = this.enemies[i].enemy.hitbox;
 
         if (this.collision(hurtbox.topLeft, hurtbox.bottomRight, hitbox.topLeft, hitbox.bottomRight)) {
@@ -371,6 +378,8 @@ var Game = /*#__PURE__*/function () {
     value: function updateEnemies(difficulty) {
       var _this2 = this;
 
+      if (this.enemies.length === 0) this.enemies.push(new _enemy__WEBPACK_IMPORTED_MODULE_1__["default"](this.player.conga[0].position.x, this.player.conga[0].position.y, true)); // when game starts add an enemy off screen 
+
       while (this.enemies.length < difficulty) {
         this.enemies.push(new _enemy__WEBPACK_IMPORTED_MODULE_1__["default"](this.player.conga[0].position.x, this.player.conga[0].position.y));
       }
@@ -391,62 +400,54 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "attackNearestEnemy",
     value: function attackNearestEnemy(playerX, playerY) {
-      var _this4 = this;
-
-      this.enemies.forEach(function (enemy) {
-        if (Math.abs(enemy.enemy.position.x - playerX) < 100 && Math.abs(enemy.enemy.position.y - playerY) < 100) {
-          var attack = _this4.player.attack(enemy.enemy.position.x, enemy.enemy.position.y, playerX, playerY);
-
-          _this4.attacks.push(attack);
+      for (var i = 0; i < this.enemies.length; i++) {
+        if (Math.abs(this.enemies[i].enemy.position.x - playerX) < 100 && Math.abs(this.enemies[i].enemy.position.y - playerY) < 100) {
+          console.log(this.enemies[i], this.player.conga[0].position);
+          var attack = this.player.attack(this.enemies[i].enemy.position.x, this.enemies[i].enemy.position.y, playerX, playerY);
+          this.attacks.push(attack);
+          return;
         }
-      });
+      }
     }
   }, {
     key: "drawAttacks",
     value: function drawAttacks() {
-      var _this5 = this;
+      var _this4 = this;
 
       this.attacks.forEach(function (attack) {
-        attack.draw(_this5.ctx);
+        attack.draw(_this4.ctx);
       });
     }
   }, {
     key: "updateAttacks",
     value: function updateAttacks() {
-      var _this6 = this;
+      var _this5 = this;
 
       this.attacks.forEach(function (attack) {
         attack.update(); // if projectile goes off screen, remove it
 
         if (attack.projectile.position.x > 650 || attack.projectile.position.x < 0 || attack.projectile.position.y > 610 || attack.projectile.position.y < 0) {
-          _this6.attacks.pop(); // change this once more than one person attacks
+          _this5.attacks.pop(); // change this once more than one person attacks
 
         } // checks if attack collides with enemy and removes if it does
 
 
         var idxToRemove = null;
 
-        _this6.enemies.forEach(function (enemy) {
-          if (_this6.collision(enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight, attack.projectile.hitbox.topLeft, attack.projectile.hitbox.bottomRight)) {
-            _this6.attacks.pop(); // change this once more than one person attacks
+        _this5.enemies.forEach(function (enemy) {
+          if (_this5.collision(enemy.enemy.hitbox.topLeft, enemy.enemy.hitbox.bottomRight, attack.projectile.hitbox.topLeft, attack.projectile.hitbox.bottomRight)) {
+            _this5.attacks.pop(); // change this once more than one person attacks
 
 
-            idxToRemove = _this6.enemies.indexOf(enemy);
+            idxToRemove = _this5.enemies.indexOf(enemy);
           }
         });
 
         if (idxToRemove) {
-          // This is supposed to remove the enemy that is hit but still doesn't work, I believe the error of the enemy that doesn't die is here
-          _this6.updateScore();
+          // removes enemy when hit
+          _this5.updateScore();
 
-          console.log(_this6.enemies, 'index', idxToRemove);
-          var newEnemies = [];
-
-          for (var i = 0; i < _this6.enemies.length; i++) {
-            if (i !== idxToRemove) newEnemies.push(_this6.enemies[i]);
-          }
-
-          _this6.enemies = newEnemies;
+          _this5.enemies.splice(idxToRemove, 1);
         }
       });
     }
@@ -455,6 +456,11 @@ var Game = /*#__PURE__*/function () {
     value: function updateScore() {
       this.score++;
       document.getElementById('score').innerHTML = this.score;
+    }
+  }, {
+    key: "determineDifficulty",
+    value: function determineDifficulty() {
+      return Math.floor(this.score / 2 + 2);
     }
   }]);
 
@@ -513,7 +519,6 @@ var GameView = /*#__PURE__*/function () {
       console.log('Render');
       this.update();
       this.draw();
-      document.getElementsByClassName('score').innerHTML = "Score: ".concat(this.score);
     }
   }, {
     key: "update",
@@ -792,11 +797,11 @@ var Player = /*#__PURE__*/function () {
       var attackY = enemyY - playerY; // gets the vector direction the attack should travel
 
       if (attackX > attackY) {
-        attackY = attackY / attackX;
-        attackX = attackX / attackX;
+        attackY = attackY / Math.abs(attackX);
+        attackX = attackX / Math.abs(attackX);
       } else {
-        attackX = attackX / attackY;
-        attackY = attackY / attackY;
+        attackX = attackX / Math.abs(attackY);
+        attackY = attackY / Math.abs(attackY);
       }
 
       return new _attack__WEBPACK_IMPORTED_MODULE_1__["default"](playerX, playerY, {
