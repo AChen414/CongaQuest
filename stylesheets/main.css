@@ -65,6 +65,14 @@ body {
 	height: 650px;
 }
 
+#startScreen {
+	/* visibility: hidden; */
+}
+
+.screen {
+	
+}
+
 .directions {
 	display: flex;
 	flex-direction: column;

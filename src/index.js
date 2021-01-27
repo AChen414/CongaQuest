@@ -5,5 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = canvas.getContext("2d");
 
     const newGame = new GameView(ctx);
+
     newGame.start();
 })
+
+function mainScreen() {
+    const startScreen = document.getElementById("startScreen");
+    startScreen.style.visibility = 'visible'
+}

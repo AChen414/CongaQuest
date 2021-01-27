@@ -495,7 +495,7 @@ var GameView = /*#__PURE__*/function () {
     _classCallCheck(this, GameView);
 
     this.lastRenderTime = 0;
-    this.updatesPerSecond = 5;
+    this.updatesPerSecond = 8;
     this.score = 0;
     this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](ctx);
   }
@@ -556,6 +556,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var newGame = new _game_view__WEBPACK_IMPORTED_MODULE_0__["default"](ctx);
   newGame.start();
 });
+
+function mainScreen() {
+  var startScreen = document.getElementById("startScreen");
+  startScreen.style.visibility = 'visible';
+}
 
 /***/ }),
 
