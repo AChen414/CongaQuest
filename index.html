@@ -10,39 +10,50 @@
     <title>Conga Quest</title>
 </head>
 <body>
-    
-    <div class="directions">
-        <h2 class="score">Score: </h2>
-        <h2 class="score" id="score">0</h2>
-        <h2 class="controls">Controls</h2>
-        <p class="control-title">Movement</p>
-        <img src="./assets/arrow.png" class="arrow-keys">
-        <p class="instructions">
-            Use the arrow keys to move your conga line of adventurers. Similar to Snake.<br><br>
+    <div class="game">
+        <div class="directions">
+            <h2 class="score">Score: </h2>
+            <h2 class="score" id="score">0</h2>
+            <h2 class="controls">Controls</h2>
+            <p class="control-title">Movement</p>
+            <img src="./assets/arrow.png" class="arrow-keys">
+            <p class="instructions">
+                Use the arrow keys to move your conga line of adventurers. Similar to Snake.<br><br>
+                
+                You will automatically attack enemies near you.<br><br>
+                
+                You lose if you walk off the screen or into an enemy.
+            </p>
+        </div>
 
-            You will automatically attack enemies near you.<br><br>
-
-            You lose if you walk off the screen or into an enemy.
-        </p>
+        <div class="canvas">
+            <div id="start-screen" class="screen">
+                <div class="screenText">
+                    <h1>Press any key to start!</h1>
+                </div>
+            </div>
+            <div id="game-over-modal" class="modal">
+                <h1>Game Over</h1>
+                <div>Score: </div>
+                <div>High Score:</div>
+                <div id="retry">Press any key to retry!</div>
+            </div>
+            <canvas id="game-screen" class="screen" height="610" width="650"></canvas>
+        </div>
+        
+        <aside class="links">
+            <div class="linkedin">
+                <a href="https://linkedin.com/in/andrew-chen-787534171">
+                    <img src="./assets/linkedin.png" class="linkedin-img">
+                </a>
+            </div>
+            <div class="github">
+                <a href="https://github.com/AChen414/CongaQuest">
+                    <img src="./assets/github.png" class="github-img">
+                </a>
+            </div>
+        </aside>
     </div>
-    <div id="startScreen" class="screen" height="610" width="650">
-        <div class="screenText">
-            <h1>Press any key to start!</h1>
-        </div>
-    </div>
-    <canvas id="gameScreen" class="screen" height="610" width="650"></canvas>
-    <aside class="links">
-        <div class="linkedin">
-            <a href="https://linkedin.com/in/andrew-chen-787534171">
-                <img src="./assets/linkedin.png" class="linkedin-img">
-            </a>
-        </div>
-        <div class="github">
-            <a href="https://github.com/AChen414/CongaQuest">
-                <img src="./assets/github.png" class="github-img">
-            </a>
-        </div>
-    </aside>
     <script src="main.js"></script>
 </body>
 </html>

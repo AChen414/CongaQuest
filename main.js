@@ -551,16 +551,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _game_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_view */ "./src/game_view.js");
 
 document.addEventListener("DOMContentLoaded", function () {
-  var canvas = document.getElementById("gameScreen");
+  var canvas = document.getElementById("game-screen");
   var ctx = canvas.getContext("2d");
   var newGame = new _game_view__WEBPACK_IMPORTED_MODULE_0__["default"](ctx);
   newGame.start();
-});
-
-function mainScreen() {
-  var startScreen = document.getElementById("startScreen");
-  startScreen.style.visibility = 'visible';
-}
+}); // function mainScreen() 
+//     const startScreen = document.getElementById("start-screen");
+//     startScreen.style.visibility = 'visible';
+// }
 
 /***/ }),
 
