@@ -2,7 +2,7 @@ import Player from './player';
 import Enemy from './enemy';
 
 export default class Game {
-    constructor(ctx) {
+    constructor(ctx, lose) {
         this.ctx = ctx;
         this.player = new Player();
         this.dungeon = new Image();
@@ -10,6 +10,7 @@ export default class Game {
         this.attacks = [];
         this.score = 0;
         this.dungeon.src = "./assets/dungeon.png";
+        this.lose = lose;
     }
 
     draw() {
@@ -48,6 +49,7 @@ export default class Game {
                 character.sprite = this.player.deathCharacter
             })
             if (!this.playerCollision()) this.player.revertMove();
+            this.lose(this.score);
         }
     }
     

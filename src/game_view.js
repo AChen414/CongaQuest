@@ -1,11 +1,11 @@
 import Game from './game';
 
 export default class GameView {
-    constructor(ctx) {
+    constructor(ctx, lose) {
         this.lastRenderTime = 0;
         this.updatesPerSecond = 8;
         this.score = 0;
-        this.game = new Game(ctx);
+        this.game = new Game(ctx, lose);
     }
 
     start() {

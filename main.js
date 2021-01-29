@@ -274,7 +274,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var Game = /*#__PURE__*/function () {
-  function Game(ctx) {
+  function Game(ctx, lose) {
     _classCallCheck(this, Game);
 
     this.ctx = ctx;
@@ -284,6 +284,7 @@ var Game = /*#__PURE__*/function () {
     this.attacks = [];
     this.score = 0;
     this.dungeon.src = "./assets/dungeon.png";
+    this.lose = lose;
   }
 
   _createClass(Game, [{
@@ -322,6 +323,7 @@ var Game = /*#__PURE__*/function () {
           character.sprite = _this.player.deathCharacter;
         });
         if (!this.playerCollision()) this.player.revertMove();
+        this.lose(this.score);
       }
     }
   }, {
@@ -491,13 +493,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var GameView = /*#__PURE__*/function () {
-  function GameView(ctx) {
+  function GameView(ctx, lose) {
     _classCallCheck(this, GameView);
 
     this.lastRenderTime = 0;
     this.updatesPerSecond = 8;
     this.score = 0;
-    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](ctx);
+    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](ctx, lose);
   }
 
   _createClass(GameView, [{
@@ -551,14 +553,49 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _game_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game_view */ "./src/game_view.js");
 
 document.addEventListener("DOMContentLoaded", function () {
+  if (!localStorage.getItem('highScore')) localStorage.setItem('highScore', 0);
+  mainScreen();
+});
+
+function mainScreen() {
+  var startScreen = document.getElementById("start-screen");
+  startScreen.style.visibility = 'visible';
+  setTimeout(function () {
+    document.addEventListener("keydown", run);
+  }, 500);
+}
+
+function run() {
+  document.getElementById("game-over-modal").style.zIndex = 0;
   var canvas = document.getElementById("game-screen");
   var ctx = canvas.getContext("2d");
-  var newGame = new _game_view__WEBPACK_IMPORTED_MODULE_0__["default"](ctx);
+  var newGame = new _game_view__WEBPACK_IMPORTED_MODULE_0__["default"](ctx, lose);
+  document.getElementById("start-screen").style.visibility = "hidden";
+  document.removeEventListener("keydown", run);
   newGame.start();
-}); // function mainScreen() 
-//     const startScreen = document.getElementById("start-screen");
-//     startScreen.style.visibility = 'visible';
+} // function animation(e) {
+//     this.innerHTML = e.fall
 // }
+
+
+function lose(score) {
+  var gameOver = document.getElementById("game-over-modal");
+  var endScore = document.getElementById("end-score");
+  var highScore = document.getElementById("high-score");
+  endScore.innerHTML = "Score: ".concat(score);
+
+  if (parseInt(localStorage.getItem('highScore')) < score) {
+    localStorage.setItem('highScore', score);
+    highScore.innerHTML = "High Score: ".concat(localStorage.getItem('highScore'));
+  } else {
+    highScore.innerHTML = "High Score: ".concat(localStorage.getItem('highScore'));
+  }
+
+  gameOver.style.zIndex = 11;
+  setTimeout(function () {
+    document.addEventListener("keydown", run);
+  }, 500);
+}
 
 /***/ }),
 

@@ -75,10 +75,6 @@ body {
 	z-index: 10;
 }
 
-#game-over-modal {
-
-}
-
 .canvas {
 	height: 610px;
 	width: 650px;
