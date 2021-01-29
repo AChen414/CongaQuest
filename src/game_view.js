@@ -19,7 +19,7 @@ export default class GameView {
         const secondsSinceLastRender = (currentTime - this.lastRenderTime) / 1000;
         if (secondsSinceLastRender < 1 / this.updatesPerSecond) return;
         this.lastRenderTime = currentTime;
-        console.log('Render');
+        // console.log('Render');
 
         this.update();
         this.draw();

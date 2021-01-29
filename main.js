@@ -404,7 +404,6 @@ var Game = /*#__PURE__*/function () {
     value: function attackNearestEnemy(playerX, playerY) {
       for (var i = 0; i < this.enemies.length; i++) {
         if (Math.abs(this.enemies[i].enemy.position.x - playerX) < 100 && Math.abs(this.enemies[i].enemy.position.y - playerY) < 100) {
-          console.log(this.enemies[i], this.player.conga[0].position);
           var attack = this.player.attack(this.enemies[i].enemy.position.x, this.enemies[i].enemy.position.y, playerX, playerY);
           this.attacks.push(attack);
           return;
@@ -517,8 +516,8 @@ var GameView = /*#__PURE__*/function () {
       });
       var secondsSinceLastRender = (currentTime - this.lastRenderTime) / 1000;
       if (secondsSinceLastRender < 1 / this.updatesPerSecond) return;
-      this.lastRenderTime = currentTime;
-      console.log('Render');
+      this.lastRenderTime = currentTime; // console.log('Render');
+
       this.update();
       this.draw();
     }
@@ -567,15 +566,19 @@ function mainScreen() {
 
 function run() {
   document.getElementById("game-over-modal").style.zIndex = 0;
+  document.removeEventListener("keydown", run);
+  var oldCanvas = document.getElementById('game-screen');
+  if (oldCanvas) oldCanvas.remove();
+  var newCanvas = createCanvas();
+  document.getElementsByClassName('canvas')[0].append(newCanvas);
   var canvas = document.getElementById("game-screen");
   var ctx = canvas.getContext("2d");
   var newGame = new _game_view__WEBPACK_IMPORTED_MODULE_0__["default"](ctx, lose);
   document.getElementById("start-screen").style.visibility = "hidden";
-  document.removeEventListener("keydown", run);
   newGame.start();
 } // function animation(e) {
 //     this.innerHTML = e.fall
-// }
+// }    
 
 
 function lose(score) {
@@ -595,6 +598,15 @@ function lose(score) {
   setTimeout(function () {
     document.addEventListener("keydown", run);
   }, 500);
+}
+
+function createCanvas() {
+  var canvas = document.createElement('canvas');
+  canvas.id = 'game-screen';
+  canvas.classList.add('screen');
+  canvas.height = 610;
+  canvas.width = 650;
+  return canvas;
 }
 
 /***/ }),

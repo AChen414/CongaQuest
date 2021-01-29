@@ -39,6 +39,7 @@ export default class Game {
         }
         this.updateAttacks();
         this.gameOver();
+
     }
 
     gameOver() {
@@ -110,7 +111,6 @@ export default class Game {
     attackNearestEnemy(playerX, playerY) {
         for (let i = 0; i < this.enemies.length; i++) {
             if (Math.abs(this.enemies[i].enemy.position.x - playerX) < 100 && Math.abs(this.enemies[i].enemy.position.y - playerY) < 100) {
-                console.log(this.enemies[i], this.player.conga[0].position)
                 let attack = this.player.attack(this.enemies[i].enemy.position.x, this.enemies[i].enemy.position.y, playerX, playerY);
                 this.attacks.push(attack);
                 return;

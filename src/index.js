@@ -15,19 +15,25 @@ function mainScreen() {
 
 function run() {
     document.getElementById("game-over-modal").style.zIndex = 0;
+    document.removeEventListener("keydown", run);
+
+    let oldCanvas = document.getElementById('game-screen');
+    if (oldCanvas) oldCanvas.remove();
+    let newCanvas = createCanvas();
+    document.getElementsByClassName('canvas')[0].append(newCanvas);
+
     const canvas = document.getElementById("game-screen");
     const ctx = canvas.getContext("2d");
-    const newGame = new GameView(ctx, lose);
+    let newGame = new GameView(ctx, lose);
     
     document.getElementById("start-screen").style.visibility = "hidden";
-    document.removeEventListener("keydown", run);
     
     newGame.start();
 }
 
 // function animation(e) {
 //     this.innerHTML = e.fall
-// }
+// }    
 
 function lose(score) {
     let gameOver = document.getElementById("game-over-modal");
@@ -42,6 +48,15 @@ function lose(score) {
     }
     gameOver.style.zIndex = 11;
     setTimeout(() => {
-        document.addEventListener("keydown", run)
+        document.addEventListener("keydown", run);
     }, 500);
+}
+
+function createCanvas() {
+    let canvas = document.createElement('canvas');
+    canvas.id = 'game-screen';
+    canvas.classList.add('screen');
+    canvas.height = 610;
+    canvas.width = 650;
+    return canvas;
 }
